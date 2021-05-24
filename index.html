@@ -172,6 +172,482 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Spring注入接口的多个实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/24/Spring%E6%B3%A8%E5%85%A5%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%A4%9A%E4%B8%AA%E5%AE%9E%E7%8E%B0/">Spring构造器注入接口的多个实现</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/24/Spring%E6%B3%A8%E5%85%A5%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%A4%9A%E4%B8%AA%E5%AE%9E%E7%8E%B0/" class="archive-article-date">
+  	<time datetime="2021-05-24T03:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>接口AfterSalesHandler有多个实现类，在调用某个的实现类的方法的时候，需要先获取到这个实现类的bean。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public interface AfterSalesHandler &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 执行实际发送卡片或者回调</span><br><span class="line">     *</span><br><span class="line">     * @param</span><br><span class="line">     * @return</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Result executeAfterSalesAction(Request request);</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 执行名称</span><br><span class="line">     *</span><br><span class="line">     * @return</span><br><span class="line">     *&#x2F;</span><br><span class="line">    String getName();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应的两个实现类分别为AfterSalesSendCardHandler，AfterSalesCallbackHandler</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AfterSalesSendCardHandler</span> <span class="keyword">implements</span> <span class="title">AfterSalesHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result <span class="title">executeAfterSalesAction</span><span class="params">(Request request)</span> </span>&#123;</span><br><span class="line">    		<span class="keyword">return</span> doSendCard();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="string">&quot;sendCard&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AfterSalesCallbackHandler</span> <span class="keyword">implements</span> <span class="title">AfterSalesHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result <span class="title">executeAfterSalesAction</span><span class="params">(Request request)</span> </span>&#123;</span><br><span class="line">    		<span class="keyword">return</span> callback();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    		<span class="keyword">return</span> <span class="string">&quot;callback&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>总结下日常开发常用的获取对象的方式。</p>
+<p>方式一，直接注入</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> AfterSalesCallbackHandler afterSalesCallbackHandler;</span><br><span class="line"></span><br><span class="line">Result result = afterSalesCallbackHandler.executeAfterSalesAction(request)</span><br></pre></td></tr></table></figure>
+
+<p>方式二，通过ApplicationContext获取bean</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationHolder</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 服务器启动，Spring容器初始化时，当加载了当前类为bean组件后，</span></span><br><span class="line"><span class="comment">     * 将会调用下面方法注入ApplicationContext实例</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext arg0)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        ApplicationHolder.applicationContext = arg0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(String beanName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (T) applicationContext.getBean(beanName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">AfterSalesHandler handler = ApplicationHolder.getBean(<span class="string">&quot;afterSalesCallbackHandler&quot;</span>);</span><br><span class="line">Result result = handler.executeAfterSalesAction(request);</span><br></pre></td></tr></table></figure>
+
+<p>✨方式三，构造器注入，注入接口所有的实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, AfterSalesHandler&gt; handlerMap;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">constructor</span><span class="params">(Map&lt;String, AfterSalesHandler&gt; handlerMap)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.handlerMap = handlerMap;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">AfterSalesHandler handler = handlerMap.get(<span class="string">&quot;afterSalesCallbackHandler&quot;</span>);</span><br><span class="line">Result result = handler.executeAfterSalesAction(request);</span><br></pre></td></tr></table></figure>
+
+<p>第三种方法非常实用，依赖Spring的高级特性，直接获取到接口实现类的所有bean对象，避免了注入多个实现类，以及不用通过实现ApplicationContextAware接口获取Bean。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">经验</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/24/Spring%E6%B3%A8%E5%85%A5%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%A4%9A%E4%B8%AA%E5%AE%9E%E7%8E%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-常用SQL" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/07/%E5%B8%B8%E7%94%A8SQL/">开发常用SQL</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/07/%E5%B8%B8%E7%94%A8SQL/" class="archive-article-date">
+  	<time datetime="2021-05-07T14:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1、sku修改记录表，选出每个sku最新的修改记录</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t1.<span class="operator">*</span> <span class="keyword">FROM</span> unify_price_log <span class="keyword">as</span> t1 </span><br><span class="line"><span class="keyword">join</span> </span><br><span class="line">(</span><br><span class="line">  <span class="keyword">SELECT</span> id,sku_id,<span class="built_in">max</span>(created_at) <span class="keyword">as</span> max <span class="keyword">from</span> unify_price_log <span class="keyword">as</span> t2 <span class="keyword">GROUP</span> <span class="keyword">by</span> t2.sku_id</span><br><span class="line">) <span class="keyword">as</span> t3 </span><br><span class="line"><span class="keyword">on</span> t1.sku_id<span class="operator">=</span>t3.sku_id <span class="keyword">and</span> t1.created_at<span class="operator">=</span>t3.max</span><br></pre></td></tr></table></figure>
+
+<p>⚠️ t3表中的id是随机的</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">data</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/07/%E5%B8%B8%E7%94%A8SQL/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Untitled" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/07/Untitled/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-dubbo泛化调用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/07/dubbo%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-C端消息回调" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="回调逻辑梳理"><a href="#回调逻辑梳理" class="headerlink" title="回调逻辑梳理"></a>回调逻辑梳理</h4><ul>
+<li>客户端调用接入层服务zaire-api接口/message/callback,</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/07/C%E7%AB%AF%E6%B6%88%E6%81%AF%E5%9B%9E%E8%B0%83/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-事务隔离级别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/05/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/">MySQL之事务隔离级别</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/05/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" class="archive-article-date">
+  	<time datetime="2021-05-05T13:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>数据库事务的隔离级别有4种，由低到高分别为Read uncommitted 、Read committed 、Repeatable read 、Serializable 。而且，在事务的并发操作中可能会出现脏读，不可重复读，幻读。下面通过事例一一阐述它们的概念与联系。</p>
+<h3 id="Read-uncommitted"><a href="#Read-uncommitted" class="headerlink" title="Read uncommitted"></a>Read uncommitted</h3><p>读未提交，顾名思义，就是一个事务可以读取另一个未提交事务的数据。</p>
+<p>事例：老板要给程序员发工资，程序员的工资是3.6万/月。但是发工资时老板不小心按错了数字，按成3.9万/月，该钱已经打到程序员的户口，但是事务还没有提交，就在这时，程序员去查看自己这个月的工资，发现比往常多了3千元，以为涨工资了非常高兴。但是老板及时发现了不对，马上回滚差点就提交了的事务，将数字改成3.6万再提交。</p>
+<p>分析：实际程序员这个月的工资还是3.6万，但是程序员看到的是3.9万。他看到的是老板还没提交事务时的数据。这就是脏读。那怎么解决脏读呢？Read committed！读提交，能解决脏读问题。</p>
+<h3 id="Read-committed"><a href="#Read-committed" class="headerlink" title="Read committed"></a>Read committed</h3><p>读提交，顾名思义，就是一个事务要等另一个事务提交后才能读取数据。</p>
+<p>事例：程序员拿着信用卡去享受生活（卡里当然是只有3.6万），当他埋单时（程序员事务开启），收费系统事先检测到他的卡里有3.6万，就在这个时候！！程序员的妻子要把钱全部转出充当家用，并提交。当收费系统准备扣款时，再检测卡里的金额，发现已经没钱了（第二次检测金额当然要等待妻子转出金额事务提交完）。程序员就会很郁闷，明明卡里是有钱的…</p>
+<p>分析：这就是读提交，若有事务对数据进行更新（UPDATE）操作时，读操作事务要等待这个更新操作事务提交后才能读取数据，可以解决脏读问题。但在这个事例中，出现了一个事务范围内两个相同的查询却返回了不同数据，这就是不可重复读。那怎么解决可能的不可重复读问题？Repeatable read ！</p>
+<h3 id="Repeatable-read（MySQL默认使用）"><a href="#Repeatable-read（MySQL默认使用）" class="headerlink" title="Repeatable read（MySQL默认使用）"></a>Repeatable read（MySQL默认使用）</h3><p>重复读，就是在开始读取数据（事务开启）时，不再允许修改操作</p>
+<p>事例：程序员拿着信用卡去享受生活（卡里当然是只有3.6万），当他埋单时（事务开启，不允许其他事务的UPDATE修改操作），收费系统事先检测到他的卡里有3.6万。这个时候他的妻子不能转出金额了。接下来收费系统就可以扣款了。</p>
+<p>分析：重复读可以解决不可重复读问题。写到这里，应该明白的一点就是，不可重复读对应的是修改，即UPDATE操作。但是可能还会有幻读问题。因为幻读问题对应的是插入INSERT操作，而不是UPDATE操作。那怎么解决幻读问题？InnoDB通过多版本并发控制（MVCC）机制解决该问题，最傻的办法是Serializable！</p>
+<h3 id="Serializable"><a href="#Serializable" class="headerlink" title="Serializable"></a>Serializable</h3><p>Serializable 是最高的事务隔离级别，在该级别下，事务串行化顺序执行，可以避免脏读、不可重复读与幻读。但是这种事务隔离级别效率低下，比较耗数据库性能，一般不使用。</p>
+<p><em>PS：看到这篇博客讲解事务隔离级别的例子比较形象，搬运过来方便学习</em></p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_33290787/article/details/51924963">https://blog.csdn.net/qq_33290787/article/details/51924963</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">data</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/05/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-分布式事务" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/30/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">分布式事务</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/30/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="archive-article-date">
+  	<time datetime="2021-04-30T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、单个系统中处理事务一致性问题，可使用Springboot的事务管理，使用注解@Transactional</p>
+<p>二、在一个系统中，执行一个一个事务，该事务由多个步骤组成，每个步骤都是在不同的服务中处理（写数据），只要有一个步骤失败，该事务就失败回滚，这就是分布式事务。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">分布式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/30/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-布隆过滤器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -456,446 +932,10 @@
 
 
   
-    <article id="post-分布式ID" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/%E5%88%86%E5%B8%83%E5%BC%8FID/">分布式ID</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/06/%E5%88%86%E5%B8%83%E5%BC%8FID/" class="archive-article-date">
-  	<time datetime="2021-04-06T14:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>分布式ID常见于复杂分布式系统中，对大量的数据和消息进行唯一标识，例如订单、消息等，传统的数据库自增主键显然无法满足要求，无法保证唯一性。</p>
-<h4 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h4><ul>
-<li><p>java自带的一种id生成方式，uuid能够保证同一时空所有机器都能够保持唯一</p>
-</li>
-<li><p>优点是本地生成，性能极高，无需网络资源</p>
-</li>
-<li><p>缺点是生成的字符串ID长度太长，不适合用作数据库索引</p>
-</li>
-<li><p>实现方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UUID uuid = UUID.randomUUID();</span><br><span class="line">String id = uuid.toString();</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h4 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h4><ul>
-<li><p>由64位bit组成，第1位为标识位，第2位到第42位为毫秒数，记录当前时间与起始时间的毫秒数差值，记录长度为69年，第43位到52位表示机器id，Twitter是将前5位分配为idc标识号，后5位分配为机器标识号，53位到64位表示为递增序列号。</p>
-</li>
-<li><p>实现方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SnowFlake</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//下面两个每个5位，加起来就是10位的工作机器id</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> workerId;</span><br><span class="line">   <span class="comment">//工作id,每一个服务对应唯一一个workerId,这个id当服务比较少的时候，可以写在配置文件中，如果比较多的话可以使用zk的持久顺序节点</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> datacenterId;   <span class="comment">//数据id</span></span><br><span class="line">   <span class="comment">//12位的序列号</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> sequence;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">SnowFlake</span><span class="params">(<span class="keyword">long</span> workerId, <span class="keyword">long</span> datacenterId, <span class="keyword">long</span> sequence)</span></span>&#123;</span><br><span class="line">       <span class="comment">// 校验wokerId值</span></span><br><span class="line">       <span class="keyword">if</span> (workerId &gt; maxWorkerId || workerId &lt; <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(String.format(<span class="string">&quot;worker Id can&#x27;t be greater than %d or less than 0&quot;</span>,maxWorkerId));</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//校验数据中心id值</span></span><br><span class="line">       <span class="keyword">if</span> (datacenterId &gt; maxDatacenterId || datacenterId &lt; <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(String.format(<span class="string">&quot;datacenter Id can&#x27;t be greater than %d or less than 0&quot;</span>,maxDatacenterId));</span><br><span class="line">       &#125;</span><br><span class="line">       System.out.printf(<span class="string">&quot;worker starting. timestamp left shift %d, datacenter id bits %d, worker id bits %d, sequence bits %d, workerid %d&quot;</span>,</span><br><span class="line">               timestampLeftShift, datacenterIdBits, workerIdBits, sequenceBits, workerId);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">this</span>.workerId = workerId;</span><br><span class="line">       <span class="keyword">this</span>.datacenterId = datacenterId;</span><br><span class="line">       <span class="keyword">this</span>.sequence = sequence;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//初始时间戳</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> twepoch = <span class="number">1288834974657L</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//长度为5位</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> workerIdBits = <span class="number">5L</span>;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> datacenterIdBits = <span class="number">5L</span>;</span><br><span class="line">   <span class="comment">//最大值</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> maxWorkerId = -<span class="number">1L</span> ^ (-<span class="number">1L</span> &lt;&lt; workerIdBits);</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> maxDatacenterId = -<span class="number">1L</span> ^ (-<span class="number">1L</span> &lt;&lt; datacenterIdBits);</span><br><span class="line">   <span class="comment">//序列号id长度</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> sequenceBits = <span class="number">12L</span>;</span><br><span class="line">   <span class="comment">//序列号最大值</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> sequenceMask = -<span class="number">1L</span> ^ (-<span class="number">1L</span> &lt;&lt; sequenceBits);</span><br><span class="line"></span><br><span class="line">   <span class="comment">//工作id需要左移的位数，12位</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> workerIdShift = sequenceBits;</span><br><span class="line">   <span class="comment">//数据id需要左移位数 12+5=17位</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> datacenterIdShift = sequenceBits + workerIdBits;</span><br><span class="line">   <span class="comment">//时间戳需要左移位数 12+5+5=22位</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//上次时间戳，初始值为负数</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">long</span> lastTimestamp = -<span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getWorkerId</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> workerId;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDatacenterId</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> datacenterId;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getTimestamp</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> System.currentTimeMillis();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//下一个ID生成算法,线程安全的</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">nextId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">long</span> timestamp = timeGen();</span><br><span class="line"></span><br><span class="line">       <span class="comment">//获取当前时间戳如果小于上次时间戳，则表示时间戳获取出现异常</span></span><br><span class="line">       <span class="keyword">if</span> (timestamp &lt; lastTimestamp) &#123;</span><br><span class="line">           System.err.printf(<span class="string">&quot;clock is moving backwards.  Rejecting requests until %d.&quot;</span>, lastTimestamp);</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(String.format(<span class="string">&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;</span>,</span><br><span class="line">                   lastTimestamp - timestamp));</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">//获取当前时间戳如果等于上次时间戳（同一毫秒内），则在序列号加一；否则序列号赋值为0，从0开始。</span></span><br><span class="line">       <span class="keyword">if</span> (lastTimestamp == timestamp) &#123;</span><br><span class="line">           sequence = (sequence + <span class="number">1</span>) &amp; sequenceMask; <span class="comment">//序列号+1</span></span><br><span class="line">           <span class="keyword">if</span> (sequence == <span class="number">0</span>) &#123;</span><br><span class="line">               timestamp = tilNextMillis(lastTimestamp);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           sequence = <span class="number">0</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">//将上次时间戳值刷新</span></span><br><span class="line">       lastTimestamp = timestamp;</span><br><span class="line">       <span class="keyword">return</span> ((timestamp - twepoch) &lt;&lt; timestampLeftShift) |</span><br><span class="line">               (datacenterId &lt;&lt; datacenterIdShift) |</span><br><span class="line">               (workerId &lt;&lt; workerIdShift) |</span><br><span class="line">               sequence;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//获取时间戳，并与上次时间戳比较</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">tilNextMillis</span><span class="params">(<span class="keyword">long</span> lastTimestamp)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">long</span> timestamp = timeGen();</span><br><span class="line">       <span class="keyword">while</span> (timestamp &lt;= lastTimestamp) &#123;</span><br><span class="line">           timestamp = timeGen();</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> timestamp;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//获取系统时间戳</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">timeGen</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> System.currentTimeMillis();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">       SnowFlake worker = <span class="keyword">new</span> SnowFlake(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>);</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">           System.out.println(worker.nextId());</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">分布式</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/%E5%88%86%E5%B8%83%E5%BC%8FID/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-mysql之binlog" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/mysql%E4%B9%8Bbinlog/">MySQL之Binlog</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/06/mysql%E4%B9%8Bbinlog/" class="archive-article-date">
-  	<time datetime="2021-04-06T13:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id=""><a href="#" class="headerlink" title=""></a></h3>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">data</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/mysql%E4%B9%8Bbinlog/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-树的直径问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/%E6%A0%91%E7%9A%84%E7%9B%B4%E5%BE%84%E9%97%AE%E9%A2%98/">树的直径</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/06/%E6%A0%91%E7%9A%84%E7%9B%B4%E5%BE%84%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2021-04-06T12:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="简单路径：路径上的所有点至多只访问了一次。"><a href="#简单路径：路径上的所有点至多只访问了一次。" class="headerlink" title="简单路径：路径上的所有点至多只访问了一次。"></a>简单路径：路径上的所有点至多只访问了一次。</h4><h4 id="树的直径：树上最长的简单路径。"><a href="#树的直径：树上最长的简单路径。" class="headerlink" title="树的直径：树上最长的简单路径。"></a>树的直径：树上最长的简单路径。</h4><h4 id="算法思路："><a href="#算法思路：" class="headerlink" title="算法思路："></a>算法思路：</h4><ul>
-<li>①从任意一点P出发，通过DFS寻找离它最远的点Q</li>
-<li>②再次从点Q出发，通过DFS寻找离它最远的W</li>
-<li>③直径即为WQ</li>
-</ul>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 树的直径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> n int整型 树的节点个数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Tree_edge Interval类一维数组 树的边</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Edge_value int整型一维数组 边的权值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> int整型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">solve</span> <span class="params">(<span class="keyword">int</span> n, Interval[] Tree_edge, <span class="keyword">int</span>[] Edge_value)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// write code here</span></span><br><span class="line">        <span class="keyword">if</span>(Tree_edge == <span class="keyword">null</span> || Edge_value == <span class="keyword">null</span> || Tree_edge.length != Edge_value.length)&#123;<span class="keyword">return</span> <span class="number">0</span>;&#125;</span><br><span class="line">        Map&lt;Integer, List&lt;Edge&gt;&gt; graph = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">int</span> len = Tree_edge.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; ++i)&#123;</span><br><span class="line">            Interval inter = Tree_edge[i];</span><br><span class="line">            <span class="keyword">int</span> start = inter.start;</span><br><span class="line">            <span class="keyword">int</span> end = inter.end;</span><br><span class="line">            <span class="keyword">int</span> w = Edge_value[i];</span><br><span class="line">            Edge e1 = <span class="keyword">new</span> Edge(end, w);</span><br><span class="line">            <span class="keyword">if</span>(!graph.containsKey(start))&#123;</span><br><span class="line">                List&lt;Edge&gt; temp = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                graph.put(start, temp);</span><br><span class="line">            &#125;</span><br><span class="line">            graph.get(start).add(e1);</span><br><span class="line">            Edge e2 = <span class="keyword">new</span> Edge(start, w);</span><br><span class="line">            <span class="keyword">if</span>(!graph.containsKey(end))&#123;</span><br><span class="line">                List&lt;Edge&gt; temp = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                graph.put(end, temp);</span><br><span class="line">            &#125;</span><br><span class="line">            graph.get(end).add(e2);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span>[] remote = &#123;<span class="number">0</span>, <span class="number">0</span>&#125;;    <span class="comment">// remote[0] 代表以0为起点的最长路径长度， remote[1]代表最长路径的终点</span></span><br><span class="line">        dfs(graph, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>, remote);</span><br><span class="line">        <span class="keyword">int</span>[] res = &#123;<span class="number">0</span>, <span class="number">0</span>&#125;;</span><br><span class="line">        dfs(graph, remote[<span class="number">1</span>], -<span class="number">1</span>, <span class="number">0</span>, res);</span><br><span class="line">        <span class="keyword">return</span> res[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Edge</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> end;</span><br><span class="line">        <span class="keyword">int</span> w;</span><br><span class="line">        Edge(<span class="keyword">int</span> end, <span class="keyword">int</span> w)&#123;</span><br><span class="line">            <span class="keyword">this</span>.end = end;</span><br><span class="line">            <span class="keyword">this</span>.w = w;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(Map&lt;Integer, List&lt;Edge&gt;&gt; graph, <span class="keyword">int</span> from, <span class="keyword">int</span> prev, <span class="keyword">int</span> path, <span class="keyword">int</span>[] res)</span></span>&#123;</span><br><span class="line">        List&lt;Edge&gt; edges = graph.get(from);</span><br><span class="line">        <span class="keyword">for</span>(Edge edge: edges)&#123;</span><br><span class="line">            <span class="keyword">if</span>(edge.end != prev)&#123;</span><br><span class="line">                path += edge.w;</span><br><span class="line">                <span class="keyword">if</span>(path &gt; res[<span class="number">0</span>])&#123;</span><br><span class="line">                    res[<span class="number">0</span>] = path;</span><br><span class="line">                    res[<span class="number">1</span>] = edge.end;</span><br><span class="line">                &#125;</span><br><span class="line">                dfs(graph, edge.end, from, path, res);</span><br><span class="line">                path -= edge.w;    <span class="comment">// 回溯</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/%E6%A0%91%E7%9A%84%E7%9B%B4%E5%BE%84%E9%97%AE%E9%A2%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-git操作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/git%E6%93%8D%E4%BD%9C/">Git使用</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/06/git%E6%93%8D%E4%BD%9C/" class="archive-article-date">
-  	<time datetime="2021-04-06T10:06:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><strong>git clone</strong>：使用 git clone 拷贝一个 Git 仓库到本地，让自己能够查看该项目，或者进行修改，可以把 clone 命令理解为高级点的复制，这个时候该项目本身就已经是一个git 仓库了，不需要执行 git init 进行初始化，而且甚至都已经关联追踪好了远程仓库，我们只需要在这个 test 目录下任意修改或者添加文件，然后进行 commit</li>
-<li><strong>git add</strong>：命令可将该文件添加到缓存，<strong>git add .</strong> 命令来添加当前项目的所有文件</li>
-<li><strong>git status</strong>：命令用于查看项目的当前状态，加 -s 参数，会获得简短的结果输出，如果没加该参数会详细输出内容</li>
-<li><strong>git diff</strong>尚未缓存的改动， <strong>git diff –cached</strong>：查看已缓存的改动，<strong>git diff HEAD</strong>：查看已缓存的与未缓存的所有改动</li>
-<li><strong>git commit</strong> ：将缓存区内容添加到仓库</li>
-<li><strong>git reset HEAD</strong>： 命令用于取消已缓存的内容</li>
-<li><strong>git rm</strong>：从工作目录中手工删除文件，删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项 <strong>-f</strong>，把文件从暂存区域移除，但仍然希望保留在当前工作目录中，使用 <strong>–cached</strong> 选项即可</li>
-</ul>
-<h3 id="git-分支管理"><a href="#git-分支管理" class="headerlink" title="git 分支管理"></a>git 分支管理</h3><ul>
-<li>**git branch (branchname)**：创建分支</li>
-<li><strong>git branch -a</strong>：加上-a参数可以查看远程分支，远程分支会用红色表示出来</li>
-<li><strong>git branch</strong> 不带参数，会列出本地的所有分支</li>
-<li>**git branch -d  (branchname)**：删除分支</li>
-<li>**git checkout (branchname)**：切换分支</li>
-<li>**git checkout -b (branchname)**： 命令来创建新分支并立即切换到该分支下</li>
-<li><strong>git merge</strong>：合并分支，我们在一个 **featureA **分支开发完了一个功能，这个时候需要合并到主分支 master 上去，我们只需要进行如下操作：<ul>
-<li><strong>git checkout master</strong></li>
-<li><strong>git merge featureA</strong></li>
-</ul>
-</li>
-<li><strong>git log</strong>：列出历史提交记录</li>
-</ul>
-<h3 id="git-远程仓库"><a href="#git-远程仓库" class="headerlink" title="git 远程仓库"></a>git 远程仓库</h3><ul>
-<li>**git remote add [name] [url]**：添加一个新的远程仓库，可以指定一个的名字</li>
-<li><strong>git remote</strong>：查看当前配置有哪些远程仓库</li>
-<li><strong>git push&lt;远程主机名&gt; &lt;本地分支名&gt;:&lt;远程分支名&gt;</strong></li>
-<li><strong>git pull &lt;远程主机名&gt; &lt;远程分支名&gt;:&lt;本地分支名&gt;</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b develop origin&#x2F;develop</span><br></pre></td></tr></table></figure>
-
-<p>在远程分支的基础上建立<code>develop</code>分支，并且让<code>develop</code>分支追踪<code>origin/develop</code>远程分支。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch --track branch-name origin/branch-name</span><br></pre></td></tr></table></figure>
-
-<p>将<code>branch-name</code>分支追踪远程分支<code>origin/branch-name</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -u origin&#x2F;serverfix</span><br></pre></td></tr></table></figure>
-
-<p>设置当前分支跟踪远程分支origin/serverfix</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">tool</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/git%E6%93%8D%E4%BD%9C/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-first-blog" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/first-blog/">This is my first blog!</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/06/first-blog/" class="archive-article-date">
-  	<time datetime="2021-04-05T16:06:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>这是我的第一篇博客，测试测试测试。。。。</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>创建文章命令</p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>运行服务器命令</p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>本地生成静态资源文件命令</p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>部署到GitHub远程仓库命令</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/first-blog/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+    </nav>
   
 
 
@@ -986,6 +1026,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">tool</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">经验</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">中间件</a>
               </li>
              
@@ -994,19 +1042,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tool</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">data</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">分布式</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">分布式</a>
               </li>
              
               <li class="article-tag-list-item">

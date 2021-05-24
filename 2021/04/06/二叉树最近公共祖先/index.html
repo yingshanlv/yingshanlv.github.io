@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://yingshanlv.github.io">
-  <title>Tag: 中间件 | 闲思杂货店</title>
+  <title>二叉树最近公共祖先 | 闲思杂货店</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="闲思杂货店">
-<meta property="og:url" content="https://yingshanlv.github.io/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/index.html">
+  <meta name="description" content="二叉树中两个节点的最近公共祖先 解题思路 思路一 遍历二叉树，分别获取从根节点到p和q节点的两条路径，比较两条路径，相同路径中的第一个节点即为根节点，相同路径中的最后那个节点就是最近公共祖先，问题转化为如何获取从根节点到任意节点之间的路径。   代码实现1234567891011121314151617181920212223242526272829303132333435363738394041">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二叉树最近公共祖先">
+<meta property="og:url" content="https://yingshanlv.github.io/2021/04/06/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/index.html">
 <meta property="og:site_name" content="闲思杂货店">
+<meta property="og:description" content="二叉树中两个节点的最近公共祖先 解题思路 思路一 遍历二叉树，分别获取从根节点到p和q节点的两条路径，比较两条路径，相同路径中的第一个节点即为根节点，相同路径中的最后那个节点就是最近公共祖先，问题转化为如何获取从根节点到任意节点之间的路径。   代码实现1234567891011121314151617181920212223242526272829303132333435363738394041">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-06T12:50:00.000Z">
+<meta property="article:modified_time" content="2021-05-10T08:49:53.094Z">
 <meta property="article:author" content="yingshanlv">
+<meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="闲思杂货店" type="application/atom+xml">
@@ -170,60 +175,188 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-二叉树最近公共祖先" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/21/ElasticSerch%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/" class="archive-article-date">
-  	<time datetime="2021-04-21T03:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-21</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/21/ElasticSerch%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/">ElasticSerch使用总结</a>
+    <h1 class="article-title" itemprop="name">
+      二叉树最近公共祖先
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/04/06/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/" class="archive-article-date">
+  	<time datetime="2021-04-06T12:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/description/">二叉树中两个节点的最近公共祖先</a></p>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
+<li><p>思路一</p>
+<p>遍历二叉树，分别获取从根节点到p和q节点的两条路径，比较两条路径，相同路径中的第一个节点即为根节点，相同路径中的最后那个节点就是最近公共祖先，问题转化为如何获取从<strong>根节点到任意节点之间的路径</strong>。</p>
+</li>
+</ul>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * public class TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode left;</span></span><br><span class="line"><span class="comment"> *     TreeNode right;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) &#123; val = x; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> TreeNode <span class="title">lowestCommonAncestor</span><span class="params">(TreeNode root, TreeNode p, TreeNode q)</span> </span>&#123;</span><br><span class="line">        List&lt;TreeNode&gt; pPath = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">      	List&lt;TreeNode&gt; qPath = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">      	getPathFromRoot(root, p, pPath);</span><br><span class="line">      	getPathFromRoot(root, q, qPath);</span><br><span class="line">      	<span class="keyword">int</span> size = Math.min(pPath.size(), qPath.size());</span><br><span class="line">      	<span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++) &#123;</span><br><span class="line">          	<span class="keyword">if</span> (pPath.get(i) != qPath.get(i)) &#123;</span><br><span class="line">              	<span class="comment">//找到不同的直接返回上一个              </span></span><br><span class="line">              	<span class="keyword">return</span> pPath.get(i-<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//当一条路径为另一个路径的子集的时候，直接返回最短路径的最后一个      </span></span><br><span class="line">      	<span class="keyword">return</span> pPath.get(size - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">  	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">getPathFromRoot</span><span class="params">(TreeNode root, TreeNode node, List&lt;TreeNode&gt; path)</span> </span>&#123;</span><br><span class="line">      	<span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      	path.add(root);</span><br><span class="line">      	<span class="keyword">if</span> (root.val == node.val) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="keyword">if</span> (getPathFromRoot(root.left, node, path)) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">true</span>;          </span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="keyword">if</span> (getPathFromRoot(root.right, node, path)) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//左右子节点都没找到，删除当前节点      </span></span><br><span class="line">      	path.remove(path.size()-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>思路二</p>
+<p>思考从递归的角度去获取最近的公共祖先，核心是递归结束的判断条件，当任意一个节点与根节点相同时，根节点就是最近公共祖先；当两个节点都不是根节点的时候，递归根节点的左右子树获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> TreeNode <span class="title">lowestCommonAncestor</span><span class="params">(TreeNode root, TreeNode p, TreeNode q)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="keyword">if</span> (root == p || root == q) &#123;</span><br><span class="line">          	<span class="keyword">return</span> root;</span><br><span class="line">        &#125;</span><br><span class="line">      	TreeNode leftNode = lowestCommonAncestor(root.left, p, q);</span><br><span class="line">      	TreeNode rightNode = lowestCommonAncestor(root.right, p, q);</span><br><span class="line">      	<span class="comment">//左右子树都不为空，说明p和q分别在左右子树中</span></span><br><span class="line">      	<span class="keyword">if</span> (leftNode != <span class="keyword">null</span> &amp;&amp; rightNode != <span class="keyword">null</span>) &#123;</span><br><span class="line">          	<span class="keyword">return</span> root;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//左子树不为空，右子树为空，说明p和q都在左子树中</span></span><br><span class="line">      	<span class="keyword">if</span> (leftNode != <span class="keyword">null</span> &amp;&amp; rightNode == <span class="keyword">null</span>) &#123;</span><br><span class="line">          	<span class="keyword">return</span> root.left;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//左子树为空，右子树不为空，说明p和q都在右子树中</span></span><br><span class="line">      	<span class="keyword">if</span> (leftNode == <span class="keyword">null</span> &amp;&amp; rightNode != <span class="keyword">null</span>) &#123;</span><br><span class="line">          	<span class="keyword">return</span> root.right;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//左右子树中都不存在</span></span><br><span class="line">      	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">中间件</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://yingshanlv.github.io/2021/04/06/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2021/04/06/mysql%E4%B9%8Bbinlog/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          MySQL之Binlog
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2021/04/06/%E6%A0%91%E7%9A%84%E7%9B%B4%E5%BE%84%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">树的直径</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -246,9 +379,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
